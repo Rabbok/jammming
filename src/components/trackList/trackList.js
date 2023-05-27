@@ -1,11 +1,11 @@
 import './trackList.scss';
 import Track from '../track/track';
 
-const TrackList = ({tracks}) => {
+const TrackList = (props) => {
     return (
         <div className="track-list">
-            {tracks ? tracks.map((track, index) => {
-                return <Track track={track} key={index} />
+            {props.tracks ? props.tracks.map((track, index) => {
+                return <Track key={index} track={track} onAdd={props.onAdd} onRemove={props.onRemove} isRemoval={props.isRemoval}/>
             }) : null
         }
         </div>
