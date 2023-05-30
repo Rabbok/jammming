@@ -3,11 +3,12 @@ import { useState } from 'react';
 import SearchBar from '../searchBar/searchBar';
 import SearchResults from '../searchResults/searchResults';
 import Playlist from '../playlist/playlist';
+import Spotify from '../../util/Spotify';
 
 function App() {
-  const [searchResults, setEearchResults] = useState([{name: 'Name1', artist: 'artist1', album: 'album1'}, {name: 'Name2', artist: 'artist2', album: 'album2'}]);
+  const [searchResults, setSearchResults] = useState([]);
   const [playlistName, setPlaylistName] = useState('name');
-  const [playlistTracks, setPlaylistTracks] = useState([{name: 'Name', artist: 'artist', album: 'album'}, {name: 'Name', artist: 'artist', album: 'album'}]);
+  const [playlistTracks, setPlaylistTracks] = useState([]);
 
   const addTrack = (track) => {
     const isTrackExists = playlistTracks.some(savedTrack => (
@@ -29,14 +30,31 @@ function App() {
     )));
   }
 
+  const updatePlaylistName = (name) => {
+    setPlaylistName(name);
+  }
+
+  const savePlaylist = () => {
+    const trackUris = playlistTracks.map(track => track.URI);
+    console.log(trackUris)
+    console.log(playlistTracks)
+    Spotify.savePlaylist(playlistName, trackUris);
+    setPlaylistName('New Playlist');
+  }
+
+  async function search (term) {
+    const results = await Spotify.search(term);
+    setSearchResults(results);
+  }
+
   return (
     <div>
       <h1 className='caption'>Ja<span className="highlight">mmm</span>ing</h1>
       <div className="app">
-        <SearchBar/>
+        <SearchBar onSearch={search}/>
         <div className="app-playlist">
           <SearchResults searchResults={searchResults} onAdd={addTrack}/>
-          <Playlist playlistName={playlistName} playlistTracks={playlistTracks} onRemove={removeTrack}/>
+          <Playlist playlistName={playlistName} playlistTracks={playlistTracks} onRemove={removeTrack} onNameChange={updatePlaylistName} onSave={savePlaylist}/>
         </div>
       </div>
     </div>
